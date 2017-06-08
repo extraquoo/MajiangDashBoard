@@ -15,7 +15,6 @@
            http://www.springframework.org/schema/context/spring-context.xsd">
      <!-- define the transaction management  -->
     <tx:annotation-driven transaction-manager="transactionManager" />
-
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
@@ -27,7 +26,7 @@
 		<property name="maxWait" value="500"></property>
 		<property name="defaultAutoCommit" value="true"></property>
 	</bean>
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<bean id="mySessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
 		<property name="hibernateProperties">
 			<props>
@@ -48,21 +47,21 @@
 		</property>
 	</bean>
 	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-     <property name="sessionFactory" ref="sessionFactory"/>
+     <property name="sessionFactory" ref="mySessionFactory"/>
     </bean>
 	
 	<bean id="persistenceExceptionTranslationPostProcessor"
         class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
         
 	<bean id="playerDao" class="com.majiang.dao.PlayerDaoImpl" scope="singleton">
-		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="sessionFactory" ref="mySessionFactory"></property>
 	</bean>
 	
 	<bean id="gameDao" class="com.majiang.dao.GameDaoImpl" scope="singleton">
-		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="sessionFactory" ref="mySessionFactory"></property>
 	</bean>
 	
 	<bean id="boardDao" class="com.majiang.dao.BoardDaoImpl" scope="singleton">
-		<property name="sessionFactory" ref="sessionFactory"></property>
+		<property name="sessionFactory" ref="mySessionFactory"></property>
 	</bean>
 </beans>

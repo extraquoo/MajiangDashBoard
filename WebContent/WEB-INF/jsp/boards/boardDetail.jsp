@@ -26,6 +26,7 @@ $(document).ready(function (){
 var data =eval('${allBoards}');
 var table = $('#dashBoard').DataTable( {
 "aaData": data,
+"order": [[ 0, "desc" ]],
 "aoColumns": [
 { "mData": "id"},
 { "mData": "winner"},

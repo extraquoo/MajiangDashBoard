@@ -13,11 +13,6 @@
 
 	<web>
 		<link target="/">
-			<dir name="D:/spring_workspace/Majiang/target/m2e-wtp/web-resources">
-				<exclude name="/"/>
-			</dir>
-		</link>
-		<link target="/">
 			<dir name="D:/spring_workspace/Majiang/WebContent">
 			</dir>
 		</link>
