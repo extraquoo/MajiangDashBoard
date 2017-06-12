@@ -10,7 +10,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.majiang.model.Player;
 import com.majiang.service.PlayerService;
+import com.majiang.validator.PlayerFormValidator;
 
 
 
@@ -33,7 +33,8 @@ public class PlayerController {
 	@Qualifier("playerService")
 	private PlayerService playerService;
 
-
+	@Autowired
+	private PlayerFormValidator playerFormValidator;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -50,10 +51,10 @@ public class PlayerController {
 
 	// save or update player
 	@RequestMapping(value = "/players", method = RequestMethod.POST)
-	public String saveOrUpdateplayer(@ModelAttribute("playerForm") @Validated Player player,
+	public String saveOrUpdateplayer(@ModelAttribute("playerForm") Player player,
 			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
 
-
+		playerFormValidator.validate(player, result);
 		if (result.hasErrors()) {
 			populateDefaultModel(model);
 			return "players/playerform";
@@ -82,12 +83,7 @@ public class PlayerController {
 
 
 		Player player = new Player();
-		Boolean newFlag = false;
-		if(player.getId()==0){
-			newFlag = true;
-		}
 		
-		model.addAttribute("newFlag", newFlag);
 		model.addAttribute("playerForm", player);
 
 		populateDefaultModel(model);
@@ -104,7 +100,7 @@ public class PlayerController {
 		Player player = playerService.findById(id);
 		model.addAttribute("playerForm", player);
 		
-		populateDefaultModel(model);
+		//populateDefaultModel(model);
 		
 		return "players/playerform";
 

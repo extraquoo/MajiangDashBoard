@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,37 +19,37 @@
     
 						<spring:bind path="name">
 			<div class="form-group ${status.error ? 'has-error' : ''}">
-				<label class="col-sm-2 control-label">Player Name</label>
-				<div class="col-sm-10">
-					<form:input path="name" type="text" class="form-control " id="name" placeholder="name" />
+				<label class="col-sm-2 control-label"><spring:message code ="playFrom.playerName"></spring:message></label>
+				<div class="col-sm-3">
+					<form:input path="name" type="text" class="form-control " id="name"  />
 					<form:errors path="name" class="control-label" />
 				</div>
 			</div>
 			</spring:bind>
-				<spring:bind path="wallet.amount">
+				<spring:bind path="walletAmount">
 			<div class="form-group ${status.error ? 'has-error' : ''}">
-				<label class="col-sm-2 control-label">Wallet Amount</label>
-				<div class="col-sm-10">
-					<form:input path="wallet.amount" type="text" class="form-control " id="amount" placeholder="amount" />
-					<form:errors path="wallet.amount" class="control-label" />
+				<label class="col-sm-2 control-label"><spring:message code ="playFrom.playerWallet"></spring:message></label>
+				<div class="col-sm-3">
+					<form:input path="walletAmount" type="number"  step="any" class="form-control " id="walletAmount" size="10" maxlength="10" />
+					<form:errors path="walletAmount" class="control-label" />
 				</div>
 			</div>
 		</spring:bind>
-
-            <div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10">
+           <div class="btn-toolbar">			
 				<c:choose>
-					<c:when test="${newFlag}">
-					<button type="submit" class="btn-lg btn-primary pull-right">Add</button>
+					<c:when test="${id==0}">
+					<button type="submit" class="btn btn-primary pull-right"><spring:message code ="button.add"></spring:message></button>
 					</c:when>
 					<c:otherwise>
-					<button type="submit" class="btn-lg btn-primary pull-right">Update</button>			
+					<button type="submit" class="btn btn-primary pull-right"><spring:message code ="button.update"></spring:message></button>			
 					</c:otherwise>
-				</c:choose>
-			</div>
-		</div>
+				</c:choose>						
+		</div>	
 	</form:form>
-
+	<div style="padding-top:5px">
+	 <spring:url value="/players" var="playUrl" /> 
+	     <button class="btn btn-info pull-right" onclick="location.href='${playUrl}'"><spring:message code ="button.cancel"></spring:message></button>
+	     </div>
 </div>
 
 <jsp:include page="../fragments/footer.jsp" />

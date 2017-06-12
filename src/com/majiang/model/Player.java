@@ -2,13 +2,12 @@ package com.majiang.model;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import javax.persistence.CascadeType;
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -25,18 +24,16 @@ public class Player implements java.io.Serializable {
 	@Column(name = "PLAYER_NAME", unique = true, nullable = false, length = 20)
 	private String name;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="WALLET_ID")
-	private Wallet wallet;
-
+	@Column(name = "PLAYER_WALLET_AMOUNT", length= 11)
+	private BigDecimal walletAmount;
 	
 	public Player() {
 	}
 
-	public Player(int id, String name, Wallet wallet) {
+	public Player(int id, String name, BigDecimal walletAmount) {
 		this.id=id;
 	    this.name=name;
-	    this.wallet = wallet;
+	    this.walletAmount = walletAmount;
 	}
 
 	
@@ -57,13 +54,14 @@ public class Player implements java.io.Serializable {
 		this.name = name;
 	}
 
+	public BigDecimal getWalletAmount() {
+		return walletAmount;
+	}
+
+	public void setWalletAmount(BigDecimal walletAmount) {
+		this.walletAmount = walletAmount;
+	}
+
 	
-	public Wallet getWallet() {
-		return wallet;
-	}
-
-	public void setWallet(Wallet wallet) {
-		this.wallet = wallet;
-	}
-
+	
 	}

@@ -18,12 +18,15 @@ public class Constants {
 	public final static String DA_DIAO_CHE="DDC";
 	public final static String QUAN_FENG_XIANG="QFX";	
 	public final static String ZI_PENG="QFP";
-	
+	public final static String HUANG_FAN="HF";
 	
 	
 	
 	public final static String YES = "Y";
 	public final static String NO ="N";
+	
+	public final static String SEMICOLON =";";
+	
 	
 	
 }

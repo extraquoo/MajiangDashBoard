@@ -1,7 +1,9 @@
 package com.majiang.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +31,14 @@ import com.google.gson.GsonBuilder;
 import com.majiang.model.Board;
 import com.majiang.model.DashBoard;
 import com.majiang.model.Game;
+import com.majiang.model.GameBoards;
 import com.majiang.model.Player;
+import com.majiang.model.PoolStatistics;
 import com.majiang.service.BoardService;
 import com.majiang.service.GameService;
 import com.majiang.service.PlayerService;
+import com.majiang.validator.BoardFormValidator;
+import com.majiang.validator.GameFormValidator;
 
 @Controller
 public class GameController {
@@ -51,31 +57,35 @@ public class GameController {
 	@Qualifier("boardService")
 	private BoardService boardService;
 	
+	@Autowired
+	private GameFormValidator gameFormValidator;
 	
+	@Autowired
+	private BoardFormValidator boardFormValidator;
 	
 	@RequestMapping(value = "/games", method = RequestMethod.GET)
 	public String showAllgames(Model model) {
-		model.addAttribute("games", gameService.findAllGames());
+		List<GameBoards> allGamesBoards = gameService.findAllGameBoards();
+		model.addAttribute("gameBoards", allGamesBoards);
 		return "games/gameList";
 
 	}
 
 
 	@RequestMapping(value = "/games", method = RequestMethod.POST)
-	public String saveOrUpdateGame(@ModelAttribute("gameForm") @Validated Game game,
+	public String saveOrUpdateGame(@ModelAttribute("gameForm") Game game,
 			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
 
-
+		gameFormValidator.validate(game, result);
 		if (result.hasErrors()) {
 			populateGameModel(model);
 			return "games/gameForm";
 		} else {
-
+		
 			redirectAttributes.addFlashAttribute("css", "success");
 			
 			redirectAttributes.addFlashAttribute("msg", "game updated successfully!");
-			
-			
+						
 			gameService.saveOrUpdate(game);
 			
 			// POST/REDIRECT/GET
@@ -94,28 +104,26 @@ public class GameController {
 			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
 
 		Game game = gameService.findById(newBoard.getGame_id());
+		boardFormValidator.validate(newBoard, result);
 		if (result.hasErrors()) {			
-			populateNewBoardModel(model, game);
-			return "boards/boardDetail";
+			//populateNewBoardModel(model, game);
 		} else {
-
-			redirectAttributes.addFlashAttribute("css", "success");
-			
-			redirectAttributes.addFlashAttribute("msg", "board add successfully!");
-			
-			
-			//boardService.saveGameBoard(newBoard);
-           boardService.saveGameBoard(newBoard);
-			id = newBoard.getGame_id();
-			populateNewBoardModel(model, game);
+			boardService.saveGameBoard(newBoard);
 			model.addAttribute("newBoardForm", new Board());
+			redirectAttributes.addFlashAttribute("css", "success");			
+			redirectAttributes.addFlashAttribute("msg", "board add successfully!");
+		
+		}        
+			id = newBoard.getGame_id();
+			populateNewBoardModel(model, game);		
 			List<DashBoard> dashBoards =populateDashBoard(newBoard);
+			List<PoolStatistics> pools  = populatePoolStatistics(newBoard);
 			final GsonBuilder builder = new GsonBuilder();
 		    final Gson gson = builder.create();	
 			model.addAttribute("allBoards", gson.toJson(dashBoards));
-			return "boards/boardDetail";
-		}
-
+			model.addAttribute("poolStatistics",gson.toJson(pools) );
+			populatePlayerNameForChart(model, game);
+	   return "boards/boardDetail";
 	}
 	
 
@@ -149,15 +157,29 @@ public class GameController {
 	@RequestMapping(value = "/games/{id}/start", method = RequestMethod.GET)
 	public String showUpdateGameForm(@PathVariable("id") int id, Model model) {
 
-
+        
 		Game game = gameService.findById(id);
 		populateNewBoardModel(model, game);
 		
-		List<Board> populateBoards = game.getBoards();
-		model.addAttribute("BoardSheet", populateBoards);
-		Board newBoard = new Board();
-		model.addAttribute("newBoardForm", newBoard);
+		Board defaultBoard = new Board();
+		model.addAttribute("newBoardForm", defaultBoard);
+		
+		final GsonBuilder builder = new GsonBuilder();
+	    final Gson gson = builder.create();	
+	    
+	    
+	    //construct json for charts and tables
+	    Board populateBoard = new Board();
+	    populateBoard.setGame_id(id);
+		List<DashBoard> dashBoards =populateDashBoard(populateBoard);		
+		model.addAttribute("allBoards", gson.toJson(dashBoards));
+		
+		List<PoolStatistics> pools  = populatePoolStatistics(populateBoard);
+		model.addAttribute("poolStatistics",gson.toJson(pools) );
 			
+		populatePlayerNameForChart(model, game);
+		
+		gameService.startGame(game.getId());
 		return "boards/boardDetail";
 	}
 	
@@ -176,6 +198,14 @@ public class GameController {
 		return "games/gameDetail";
 
 	}
+	
+	@RequestMapping(value = "/games/{id}/end", method = RequestMethod.GET)
+	public String setupGame(@PathVariable("id") int id, Model model) {								
+			gameService.endGame(id);
+			return "redirect:/games/";
+
+
+		}
 
 	private void populateGameModel(Model model) {
 
@@ -186,6 +216,13 @@ public class GameController {
 			renderPlayerList.add(player.getName());
 		}
 		model.addAttribute("playerList", renderPlayerList);
+		
+		//populate flowers
+				List<Integer> flowers = new ArrayList<Integer>();
+				for(int i=1; i<= 15;i++){
+					flowers.add(i);			
+				}
+				model.addAttribute("flowers", flowers);
 
 	}
 	
@@ -199,6 +236,8 @@ public class GameController {
 		boardPlayers.put("PlayerFour",game.getPlayerFour());
 		
 		model.addAttribute("boardPlayerList", boardPlayers);
+		
+
 		
 		//populate Win type
 		Map<String, String> handTypeOptions  = new LinkedHashMap<String, String>();
@@ -218,7 +257,7 @@ public class GameController {
 		winTypeOptions.put("ZM", "SelfDraw");
 		model.addAttribute("winTypeOptions", winTypeOptions);
 		//populate flowers
-		List<Integer> flowers = new ArrayList<Integer>(10);
+		List<Integer> flowers = new ArrayList<Integer>();
 		int maxFlowers = game.getMaxFlowers();
 		for(int i=1; i<= maxFlowers;i++){
 			flowers.add(i);			
@@ -241,17 +280,51 @@ public class GameController {
 	}
 
 	private List<DashBoard> populateDashBoard(Board board){
-		List<Board> allBoards = boardService.findAllBoards();
+		List<Board> allBoards = boardService.findBoardsByGameId(board.getGame_id());
 		List<DashBoard> dashBoards = new ArrayList<DashBoard>();
-		
+		int boardCount = 1 ;
 		for(Board currentBoard : allBoards){
 			DashBoard dashBoard = new DashBoard();
-			dashBoard.setId(currentBoard.getId());
+			dashBoard.setId(boardCount++);
 			dashBoard.setWinner(currentBoard.getWinner());
 			dashBoard.setComments(currentBoard.getComment());
 			dashBoard.setEndDate(currentBoard.getBoardDate());
 			dashBoards.add(dashBoard);
 		}
 		return dashBoards;
+	}
+	
+	
+	private List<PoolStatistics> populatePoolStatistics(Board board){
+		List<Board> allBoards = boardService.findBoardsByGameId(board.getGame_id());
+		List<PoolStatistics> pools = new ArrayList<PoolStatistics>();
+		BigDecimal poolOne =BigDecimal.ZERO;
+		BigDecimal poolTwo =BigDecimal.ZERO;
+		BigDecimal poolThree =BigDecimal.ZERO;
+		BigDecimal poolFour = BigDecimal.ZERO;
+		int boardSequence = 1;
+		for(Board currentBoard : allBoards){
+			PoolStatistics tempPool = new PoolStatistics();
+			tempPool.setBoard_sequence(boardSequence++);
+			poolOne = poolOne.add(currentBoard.getPlayerOneStake());
+			poolTwo = poolTwo.add(currentBoard.getPlayerTwoStake());
+			poolThree = poolThree.add(currentBoard.getPlayerThreeStake());
+			poolFour = poolFour.add(currentBoard.getPlayerFourStake());
+			tempPool.setPlayerOnePool(poolOne);
+			tempPool.setPlayerTwoPool(poolTwo);
+			tempPool.setPlayerThreePool(poolThree);
+			tempPool.setPlayerFourPool(poolFour);
+			pools.add(tempPool);
+		}
+		return pools;
+	}
+	
+	private void populatePlayerNameForChart(Model model, Game game){
+		List<String> playerNames = new LinkedList<String>();
+		playerNames.add(game.getPlayerOne());
+		playerNames.add(game.getPlayerTwo());
+		playerNames.add(game.getPlayerThree());
+		playerNames.add(game.getPlayerFour());
+		model.addAttribute("playerNames", playerNames);
 	}
 }

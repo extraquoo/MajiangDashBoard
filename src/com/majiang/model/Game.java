@@ -25,7 +25,9 @@ import javax.persistence.Table;
 			@NamedQuery(name = "findPlayerOne", query = "select g from Game g where g.id =:id" ),
 			@NamedQuery(name = "findPlayerTwo", query = "select g from Game g where g.id =:id" ),
 			@NamedQuery(name = "findPlayerThree", query = "select g from Game g where g.id =:id" ),
-			@NamedQuery(name = "findPlayerFour", query = "select g from Game g where g.id =:id" )
+			@NamedQuery(name = "findPlayerFour", query = "select g from Game g where g.id =:id" ),
+			@NamedQuery(name = "startGame", query = " update Game g set g.startDate =:startDate where g.id =:id" ),
+			@NamedQuery(name = "endGame", query = " update Game g set g.endDate =:endDate where g.id =:id" )
    		}
 	)
 public class Game  implements java.io.Serializable {

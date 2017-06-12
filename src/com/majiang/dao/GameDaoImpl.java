@@ -1,5 +1,6 @@
 package com.majiang.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -10,7 +11,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-
 import com.majiang.model.Game;
 
 @Repository
@@ -90,5 +90,21 @@ public class GameDaoImpl  implements GameDao{
 		 query.setInteger("id", id);  
 		 Game game = (Game)query.uniqueResult();	
 		return game.getPlayerFour();	
+	}
+	
+	@Override
+	public void startGame(int id){
+		 Query query = getSession().getNamedQuery("startGame");  
+		 query.setDate("startDate", new Date());
+		 query.setInteger("id", id);  
+		 query.executeUpdate();
+	}
+	
+	@Override
+	public void endGame(int id){
+		 Query query = getSession().getNamedQuery("endGame");  
+		 query.setDate("endDate", new Date());
+		 query.setInteger("id", id);  
+		 query.executeUpdate();
 	}
 }

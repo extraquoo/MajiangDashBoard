@@ -13,4 +13,8 @@ public interface BoardDao {
 	void save(Board board);
 
 	void update(Board board);
+	
+	List<Board> findBoardsByGameId(int gameId);
+	
+    int countBoardsByGameId(int gameId);
 }

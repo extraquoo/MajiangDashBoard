@@ -1,5 +1,6 @@
 package com.majiang.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.majiang.constant.Constants;
+import com.majiang.dao.BoardDao;
 import com.majiang.dao.GameDao;
 import com.majiang.model.Game;
+import com.majiang.model.GameBoards;
 
 @Service("gameService")
 public class GameServiceImpl implements GameService {
@@ -16,7 +19,8 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	GameDao gameDao;
 
-	
+	@Autowired
+	BoardDao boardDao;
 	
 	public GameDao getGameDao() {
 		return gameDao;
@@ -62,5 +66,34 @@ public class GameServiceImpl implements GameService {
 			name = gameDao.findPlayerFour(id);
 		}
 		return name;
+	}
+	
+	@Override
+	public List<GameBoards> findAllGameBoards(){
+		List<Game> games = findAllGames();
+		List<GameBoards> gameBoards = new ArrayList<GameBoards>();
+		for(Game game: games){
+			GameBoards gameBoard = new GameBoards();
+			gameBoard.setId(game.getId());
+			gameBoard.setPlayerOne(game.getPlayerOne());
+			gameBoard.setPlayerTwo(game.getPlayerTwo());
+			gameBoard.setPlayerThree(game.getPlayerThree());
+			gameBoard.setPlayerFour(game.getPlayerFour());
+			gameBoard.setCountBoards(boardDao.countBoardsByGameId(game.getId()));
+			gameBoard.setStartDate(game.getStartDate());
+			gameBoard.setEndDate(game.getEndDate());
+			gameBoards.add(gameBoard);
+		}
+		return gameBoards;
+	}
+	
+	@Override
+	public void endGame(int id){
+		gameDao.endGame(id);
+	}
+	
+	@Override
+	public void startGame(int id){
+		gameDao.startGame(id);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -64,4 +65,22 @@ public class BoardDaoImpl implements BoardDao {
 		 getSession().update(board);
 	}
 
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Board> findBoardsByGameId(int gameId) {
+		Criteria criteria = getSession().createCriteria(Board.class);
+        criteria.add(Restrictions.eq("game_id",gameId));
+		return ((List<Board>)criteria.list());
+	}
+	
+	@Override
+	public int countBoardsByGameId(int gameId){
+		 Query query = getSession().getNamedQuery("countBoards");  
+		 query.setInteger("game_id", gameId);  
+		 Long count =  (Long)query.uniqueResult();	
+		return count.intValue();	
+	}
+	
 }

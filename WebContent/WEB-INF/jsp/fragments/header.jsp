@@ -1,5 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <head>
 
 <title>Majiang</title>
@@ -11,7 +11,7 @@
 <!-- Latest compiled and minified JavaScript -->
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" ></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
 
 </head>
 
@@ -22,8 +22,8 @@
 <nav class="navbar navbar-inverse ">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="${urlHome}">All Players</a>
-			<a class="navbar-brand" href="${urlGame}">All games</a>
+			<a class="navbar-brand" href="${urlHome}"><spring:message code ="header.playerDetail"></spring:message></a>
+			<a class="navbar-brand" href="${urlGame}"><spring:message code ="header.gameDetail"></spring:message></a>
 		</div>
 	</div>
 </nav>

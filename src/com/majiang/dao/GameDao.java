@@ -21,4 +21,9 @@ public interface GameDao {
 	String findPlayerThree (int id);
 	
 	String findPlayerFour (int id);
+	
+	void endGame(int id);
+	
+	void startGame(int id);
+	
 }

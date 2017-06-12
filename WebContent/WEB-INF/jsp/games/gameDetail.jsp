@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,63 +20,39 @@
 		</div>
 	</c:if>
 
-	<h1>Game Detail</h1>
+	<h1><spring:message code ="gameDetail.gameDetail"></spring:message></h1>
 	<br />
 
 	<div class="row">
-		<label class="col-sm-2">Game ID</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.gameId"></spring:message></label>
 		<div class="col-sm-10">${game.id}</div>
 	</div>
-<br/>
-	<br/>
+
 	<div class="row">
-		<label class="col-sm-2">Player One</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.playerOne"></spring:message></label>
 		<div class="col-sm-10">${game.playerOne}</div>
 	</div>
 	
+
 	<div class="row">
-		<label class="col-sm-2">Player One Money Pool</label>
-		<div class="col-sm-10">${game.playerOneMoneyPool}</div>
-	</div>
-	
-	<br/>
-	<br/>
-	<div class="row">
-		<label class="col-sm-2">Player Two</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.playerTwo"></spring:message></label>
 		<div class="col-sm-10">${game.playerTwo}</div>
 	</div>
 	
+
 	<div class="row">
-		<label class="col-sm-2">Player Two Money Pool</label>
-		<div class="col-sm-10">${game.playerTwoMoneyPool}</div>
-	</div>
-	<br/>
-	<br/>
-	<div class="row">
-		<label class="col-sm-2">Player Three</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.playerThree"></spring:message></label>
 		<div class="col-sm-10">${game.playerThree}</div>
 	</div>
 	
 	<div class="row">
-		<label class="col-sm-2">Player Three Money Pool</label>
-		<div class="col-sm-10">${game.playerThreeMoneyPool}</div>
-	</div>
-	<br/>
-	<br/>
-	<div class="row">
-		<label class="col-sm-2">Player Four</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.playerFour"></spring:message></label>
 		<div class="col-sm-10">${game.playerFour}</div>
 	</div>
 	
-	<div class="row">
-		<label class="col-sm-2">Player Four Money Pool</label>
-		<div class="col-sm-10">${game.playerFourMoneyPool}</div>
-	</div>
-	
-<br/>
-	<br/>
+
      <div class="row">
-		<label class="col-sm-2">Base Amount</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.baseAmount"></spring:message></label>
 		<div class="col-sm-10">
 		<c:choose>
   <c:when test="${empty game.baseAmount}">$0.00</c:when>
@@ -87,7 +63,7 @@
 	</div>
 
    <div class="row">
-		<label class="col-sm-2">Flower Amount</label>
+		<label class="col-sm-2"><spring:message code ="gameDetail.flowerAmount"></spring:message></label>
 		<div class="col-sm-10">
 		<c:choose>
   <c:when test="${empty game.flowerAmount}">$0.00</c:when>
@@ -98,6 +74,16 @@
 	</div>
 
 
+<div class="row">
+		<label class="col-sm-2"><spring:message code ="gameDetail.laziAmount"></spring:message></label>
+		<div class="col-sm-10">
+ <fmt:formatNumber value = "${game.flowerAmount * game.maxFlowers + game.baseAmount}"  type = "currency"/>
+		</div>
+	</div>
+<div class="col-sm-offset-2 col-sm-10">
+	<spring:url value="/games" var="gameUrl" />
+	<button class="btn btn-info pull-right" onclick="location.href='${gameUrl}'"><spring:message code ="button.return"></spring:message></button>
+	</div>	
 </div>
 
 <jsp:include page="../fragments/footer.jsp" />

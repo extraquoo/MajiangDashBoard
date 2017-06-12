@@ -15,4 +15,8 @@ public interface BoardService {
 	void saveGameBoard(Board board);
 	
 	Board CalulateAmount(Board board);
+	
+	List<Board> findBoardsByGameId(int gameId);
+	
+	public int countBoards(int gameId);
 }

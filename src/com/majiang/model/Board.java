@@ -12,10 +12,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "BOARD")
+@NamedQuery(name = "countBoards", query = "select count(*) from Board b where b.game_id =:game_id" )
 public class Board implements java.io.Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -78,9 +80,8 @@ public class Board implements java.io.Serializable{
 	@ManyToOne(fetch=FetchType.LAZY )
 	@JoinColumn(name="GAME_ID" ,insertable = false, updatable = false)
 	private Game game;
-	
-	public Board(){
 		
+	public Board(){	
 	}
 
 	public int getId() {
@@ -143,7 +144,7 @@ public class Board implements java.io.Serializable{
 		return comment;
 	}
 
-	public void setComment(String comment) {
+	public void setComment(String comment) {	
 		this.comment = comment;
 	}
 

@@ -11,7 +11,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.majiang.model.Player;
-import com.majiang.model.Wallet;
 
 
 @Repository
@@ -40,7 +39,6 @@ public class PlayerDaoImpl  implements PlayerDao {
 	
 	@Override
 	public void save(Player player){
-		 player.setWallet(new Wallet());
 		 getSession().persist(player);
 	}
 
